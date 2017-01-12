@@ -148,5 +148,47 @@
         </plugins>
     </build>
 
+    <profiles>
+        <!-- Profile for building official Docker images. Not bound to build phases since that would require anyone build to have the Docker engine installed on their machine -->
+        <profile>
+            <id>docker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.4.13</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <imageName>nifishell</imageName>
+                            <dockerDirectory>${project.basedir}/docker</dockerDirectory>
+                            <imageTags>
+                                <imageTag>${nifi.version}</imageTag>
+                            </imageTags>
+                            <buildArgs>
+                                <NIFI_VERSION>${nifi.version}</NIFI_VERSION>
+                                <NIFI_SHELL_BINARY>nifi-shell-${nifi.version}.jar</NIFI_SHELL_BINARY>
+                            </buildArgs>
+                            <resources>
+                                <resource>
+                                    <targetPath>/</targetPath>
+                                    <directory>${project.basedir}/target</directory>
+                                    <include>nifi-shell-${nifi.version}.jar</include>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 
 </project>
