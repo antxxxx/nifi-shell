@@ -20,6 +20,7 @@ package com.jeremydyer.nifi.cli.service;
 import org.apache.nifi.web.api.dto.ProcessorDTO;
 
 import com.jeremydyer.nifi.cli.client.NiFiAPIClient;
+import com.jeremydyer.nifi.cli.configuration.Environment;
 
 /**
  * Created by jdyer on 4/8/16.
@@ -28,8 +29,8 @@ public class ProcessorsServiceImplementation
     extends AbstractBaseService
     implements ProcessorsService {
 
-    public ProcessorsServiceImplementation(String server, String port) {
-        client = new NiFiAPIClient(server, port);
+    public ProcessorsServiceImplementation(Environment environment) {
+        client = new NiFiAPIClient(environment.getHostname(), environment.getPort());
     }
 
     public ProcessorDTO getProcessors(String clientId, String processorGroupId) {

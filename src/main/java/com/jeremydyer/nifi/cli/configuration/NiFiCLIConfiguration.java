@@ -40,10 +40,6 @@ public class NiFiCLIConfiguration {
     public NiFiCLIConfiguration() {
         //TODO: set these to something much more intelligent by pulling from the instances themselves.
         this.configurationVersion = "0.1";
-        environments = new ArrayList<Environment>();
-        environments.add(new Environment("dev"));
-        environments.add(new Environment("qa"));
-        environments.add(new Environment("prod"));
     }
 
     public boolean doesEnvironmentExist(String envName) {

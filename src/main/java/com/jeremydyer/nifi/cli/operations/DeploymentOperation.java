@@ -28,12 +28,11 @@ import org.apache.nifi.web.api.entity.ProcessorTypesEntity;
 import org.apache.nifi.web.api.entity.TemplateEntity;
 import org.apache.nifi.web.api.entity.TemplatesEntity;
 
+import com.jeremydyer.nifi.cli.configuration.Environment;
+import com.jeremydyer.nifi.cli.domain.ShellContext;
 import com.jeremydyer.nifi.cli.service.FlowService;
-import com.jeremydyer.nifi.cli.service.FlowServiceImplementation;
 import com.jeremydyer.nifi.cli.service.ProcessGroups;
-import com.jeremydyer.nifi.cli.service.ProcessGroupsImplementation;
 import com.jeremydyer.nifi.cli.service.TemplateService;
-import com.jeremydyer.nifi.cli.service.TemplateServiceImplementation;
 
 /**
  * Operation for deploying a template from a lower environment to a higher environment.
@@ -45,14 +44,15 @@ public class DeploymentOperation {
     public void execute() {
         try {
             //Select the environment that you want to list the templates to promote for.
+            Environment cwe = ShellContext.getInstance().getCurrentEnvironment();
 
             //List all available templates
-            FlowService flowService = new FlowServiceImplementation("localhost", "8080");
+            FlowService flowService = ShellContext.getInstance().getServiceCacheForEnvironmentName(cwe.getEnvironmentName()).getFlowService();
             TemplatesEntity templates = flowService.getAllTemplates();
             TemplateEntity templateEntity = printTemplatesToPromote(templates);
 
             //Download Template from current environment.
-            TemplateService templateService = new TemplateServiceImplementation("localhost", "8080");
+            TemplateService templateService = ShellContext.getInstance().getServiceCacheForEnvironmentName(cwe.getEnvironmentName()).getTemplateService();
             TemplateDTO currentEnvTemplate = templateService.downloadTemplate(templateEntity.getId());
 
             //Download properties from current environment.
@@ -68,7 +68,7 @@ public class DeploymentOperation {
             System.out.println("Current Environment Processors");
 
             //Download processors/nars from promote environment.
-            FlowService promoteFlowService = new FlowServiceImplementation("localhost", "8090");
+            FlowService promoteFlowService = ShellContext.getInstance().getServiceCacheForEnvironmentName(cwe.getEnvironmentName()).getFlowService();
             ProcessorTypesEntity promoteEnvProcessors = flowService.getProcessorTypes();
             System.out.println("Promote Environment Processors");
 
@@ -94,7 +94,7 @@ public class DeploymentOperation {
 
             //Finalize deployment and push changes to promote environment.
             ProcessGroupFlowEntity promoteRootPG = promoteFlowService.getFlow("root");
-            ProcessGroups processGroups = new ProcessGroupsImplementation("localhost", "8090");
+            ProcessGroups processGroups = ShellContext.getInstance().getServiceCacheForEnvironmentName(cwe.getEnvironmentName()).getProcessGroups();
 
             TemplateEntity promotedTemplateEntity = processGroups.uploadTemplate(promoteRootPG.getProcessGroupFlow().getId(), currentEnvTemplate);
 

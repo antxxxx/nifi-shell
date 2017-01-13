@@ -27,18 +27,21 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.nifi.web.api.entity.TemplateEntity;
+import org.apache.nifi.web.api.entity.TemplatesEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jeremydyer.nifi.cli.configuration.Environment;
 import com.jeremydyer.nifi.cli.configuration.NiFiCLIConfiguration;
+import com.jeremydyer.nifi.cli.domain.ServiceCache;
 import com.jeremydyer.nifi.cli.domain.ShellContext;
 import com.jeremydyer.nifi.cli.operations.DeploymentOperation;
 
 public class NiFiShell {
 
     public static Logger logger = LoggerFactory.getLogger(NiFiShell.class);
-    public static final String NIFI_CLI_CONF_FILE_PATH = System.getProperty("user.home") + "/.nificli/conf.json";
+    public static final String NIFI_CLI_CONF_FILE_PATH = System.getProperty("user.home") + "/.nifishell/conf.json";
 
     public static void main(String[] args){
 
@@ -58,10 +61,10 @@ public class NiFiShell {
     //Hardcoded options values .... eyeroll
     private static final String QUIT = "q";
     private static final String HELP = "help";
-    private static final String LIST_ENVS = "list-envs";
-    private static final String LIST_TEMPLATES = "list-templates";
-    private static final String PROMOTE_TEMPLATE = "promote-template";
-    private static final String SET_ENV = "set-env";
+    private static final String LIST_ENVS = "lenvs";
+    private static final String LIST_TEMPLATES = "ltemplates";
+    private static final String DEPLOYMENT = "deployment";
+    private static final String SET_ENV = "senv";
     private static final String STATUS = "status";
 
     //NiFiShell method to be run on startup
@@ -77,8 +80,8 @@ public class NiFiShell {
             options.addOption(QUIT, false, "Quit NiFi-CLI");
             options.addOption(HELP, false, "Print Help");
             options.addOption("le", LIST_ENVS, false, "List NiFi cluster environments");
-            options.addOption("lt", LIST_TEMPLATES, true, "Lists Templates available for a particular NiFi environment");
-            options.addOption("pt", PROMOTE_TEMPLATE, false, "Promotes a template from a current environment to a promotion environment");
+            options.addOption("lt", LIST_TEMPLATES, false, "Lists Templates available for a particular NiFi environment");
+            options.addOption("dt", DEPLOYMENT, false, "Promotes a template from a current environment to a promotion environment");
             options.addOption("se", SET_ENV, true, "Sets the current environment that should be used for all operations");
             options.addOption(STATUS, false, "Gets the status of the current NiFi environment");
 
@@ -133,14 +136,25 @@ public class NiFiShell {
 
                 //Make sure the Env actually exists.
                 if (shellContext.getNiFiCLIConfiguration().doesEnvironmentExist(setEnv)) {
+                    logger.info("Current working environment set to: {}", setEnv);
                     shellContext.setCurrentEnvironment(shellContext.getNiFiCLIConfiguration().getEnvironmentByName(cmd.getOptionValue(SET_ENV)));
                 } else {
-                    logger.warn("NiFi environmont '%s' does not exist", setEnv);
+                    logger.warn("NiFi environmont '{}' does not exist", setEnv);
                 }
             } else if (cmd.hasOption(LIST_TEMPLATES)) {
-                logger.warn("List current environment templates is not currently implemented!");
-                //TemplateDTO templateDTO = templateService.downloadTemplate("0062005d-8618-4336-a895-cb18477d5f91");
-            } else if (cmd.hasOption(PROMOTE_TEMPLATE)) {
+
+                Environment currentEnv = shellContext.getCurrentEnvironment();
+                if (currentEnv != null) {
+                    ServiceCache sc = shellContext.getServiceCacheForEnvironmentName(currentEnv.getEnvironmentName());
+                    TemplatesEntity templates = sc.getFlowService().getAllTemplates();
+                    for (TemplateEntity template : templates.getTemplates()) {
+                        logger.info("{} - {}", template.getId(), template.getTemplate().getName());
+                    }
+                } else {
+                    logger.warn("Please set a current working environment before running this command");
+                }
+
+            } else if (cmd.hasOption(DEPLOYMENT)) {
                 DeploymentOperation deploymentOperation = new DeploymentOperation();
                 deploymentOperation.execute();
             } else if (cmd.hasOption(STATUS)) {

@@ -45,6 +45,7 @@ import org.apache.nifi.web.api.entity.ProcessGroupEntity;
 import org.apache.nifi.web.api.entity.TemplateEntity;
 
 import com.jeremydyer.nifi.cli.client.NiFiAPIClient;
+import com.jeremydyer.nifi.cli.configuration.Environment;
 
 /**
  * Created by jdyer on 4/8/16.
@@ -55,8 +56,8 @@ public class ProcessGroupsImplementation
 
     private EntityFactory entityFactory;
 
-    public ProcessGroupsImplementation(String server, String port) {
-        client = new NiFiAPIClient(server, port);
+    public ProcessGroupsImplementation(Environment environment) {
+        client = new NiFiAPIClient(environment.getHostname(), environment.getPort());
         this.entityFactory = new EntityFactory();
     }
 

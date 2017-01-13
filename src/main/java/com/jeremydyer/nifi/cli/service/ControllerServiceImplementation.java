@@ -23,6 +23,7 @@ import org.apache.nifi.web.api.entity.ControllerStatusEntity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeremydyer.nifi.cli.client.NiFiAPIClient;
+import com.jeremydyer.nifi.cli.configuration.Environment;
 
 /**
  * Created by jdyer on 4/8/16.
@@ -33,8 +34,8 @@ public class ControllerServiceImplementation
     private NiFiAPIClient client;
     private ObjectMapper mapper;
 
-    public ControllerServiceImplementation(String server, String port) {
-        client = new NiFiAPIClient(server, port);
+    public ControllerServiceImplementation(Environment environment) {
+        client = new NiFiAPIClient(environment.getHostname(), environment.getPort());
         mapper = new ObjectMapper();
     }
 

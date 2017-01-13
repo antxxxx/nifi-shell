@@ -30,6 +30,7 @@ import org.apache.nifi.web.api.entity.ProcessorTypesEntity;
 import org.apache.nifi.web.api.entity.TemplatesEntity;
 
 import com.jeremydyer.nifi.cli.client.NiFiAPIClient;
+import com.jeremydyer.nifi.cli.configuration.Environment;
 
 /**
  * Created by jdyer on 1/12/17.
@@ -40,8 +41,8 @@ public class FlowServiceImplementation
 
     private EntityFactory entityFactory;
 
-    public FlowServiceImplementation(String server, String port) {
-        client = new NiFiAPIClient(server, port);
+    public FlowServiceImplementation(Environment environment) {
+        client = new NiFiAPIClient(environment.getHostname(), environment.getPort());
         this.entityFactory = new EntityFactory();
     }
 

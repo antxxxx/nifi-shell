@@ -27,6 +27,7 @@ import org.apache.nifi.web.api.dto.TemplateDTO;
 import org.apache.nifi.web.api.entity.TemplateEntity;
 
 import com.jeremydyer.nifi.cli.client.NiFiAPIClient;
+import com.jeremydyer.nifi.cli.configuration.Environment;
 
 /**
  * Created by jdyer on 1/11/17.
@@ -37,8 +38,8 @@ public class TemplateServiceImplementation
 
     private EntityFactory entityFactory;
 
-    public TemplateServiceImplementation(String server, String port) {
-        client = new NiFiAPIClient(server, port);
+    public TemplateServiceImplementation(Environment environment) {
+        client = new NiFiAPIClient(environment.getHostname(), environment.getPort());
         this.entityFactory = new EntityFactory();
     }
 

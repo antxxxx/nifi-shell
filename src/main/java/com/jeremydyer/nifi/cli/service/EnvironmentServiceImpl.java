@@ -17,8 +17,8 @@
 
 package com.jeremydyer.nifi.cli.service;
 
-import org.apache.nifi.web.api.entity.ControllerStatusEntity;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jeremydyer.nifi.cli.client.NiFiAPIClient;
 import com.jeremydyer.nifi.cli.configuration.Environment;
 
 
@@ -28,13 +28,11 @@ import com.jeremydyer.nifi.cli.configuration.Environment;
 public class EnvironmentServiceImpl
     implements EnvironmentService {
 
-    private ControllerService controllerService = null;
+    private NiFiAPIClient client;
+    private ObjectMapper mapper;
 
     public EnvironmentServiceImpl(Environment environment) {
-        controllerService = new ControllerServiceImplementation(environment.getHostname(), environment.getPort());
-    }
-
-    public ControllerStatusEntity getEnvironmentControllerStatus(Environment env) {
-        return controllerService.getControllerStatus(null);
+        client = new NiFiAPIClient(environment.getHostname(), environment.getPort());
+        mapper = new ObjectMapper();
     }
 }

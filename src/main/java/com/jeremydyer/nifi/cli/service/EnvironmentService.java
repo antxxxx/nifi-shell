@@ -17,14 +17,9 @@
 
 package com.jeremydyer.nifi.cli.service;
 
-import org.apache.nifi.web.api.entity.ControllerStatusEntity;
-
-import com.jeremydyer.nifi.cli.configuration.Environment;
-
 /**
  * Created by jdyer on 5/11/16.
  */
 public interface EnvironmentService {
 
-    ControllerStatusEntity getEnvironmentControllerStatus(Environment env);
 }

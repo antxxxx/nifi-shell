@@ -17,7 +17,12 @@
 
 package com.jeremydyer.nifi.cli.domain;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jeremydyer.nifi.cli.configuration.Environment;
 import com.jeremydyer.nifi.cli.configuration.NiFiCLIConfiguration;
@@ -30,6 +35,7 @@ import com.jeremydyer.nifi.cli.configuration.NiFiCLIConfiguration;
  */
 public class ShellContext {
 
+    public static Logger logger = LoggerFactory.getLogger(ShellContext.class);
     private static ShellContext instance = null;
 
     private String cliDisplay = "NiFi-CLI";
@@ -38,7 +44,7 @@ public class ShellContext {
     private Map<Environment, ServiceCache> environmentServiceCacheMap;
 
     protected ShellContext() {
-
+        this.environmentServiceCacheMap = new HashMap<Environment, ServiceCache>();
     }
 
     public static ShellContext getInstance() {
@@ -46,6 +52,28 @@ public class ShellContext {
             instance = new ShellContext();
         }
         return instance;
+    }
+
+    public ServiceCache getServiceCacheForEnvironmentName(String environmentName) {
+        Iterator<Environment> itr = this.environmentServiceCacheMap.keySet().iterator();
+        ServiceCache cache = null;
+        while (itr.hasNext()) {
+            Environment env = itr.next();
+            if (env.getEnvironmentName().equalsIgnoreCase(environmentName)) {
+                cache = this.environmentServiceCacheMap.get(env);
+                break;
+            }
+        }
+
+        if (cache == null) {
+            logger.warn("Service cache for environment %s does not exist yet so building.", environmentName);
+            Environment e = this.niFiCLIConfiguration.getEnvironmentByName(environmentName);
+            ServiceCache newCache = new ServiceCache(e);
+            this.environmentServiceCacheMap.put(e, newCache);
+            return newCache;
+        } else {
+            return cache;
+        }
     }
 
     public NiFiCLIConfiguration getNiFiCLIConfiguration() {
