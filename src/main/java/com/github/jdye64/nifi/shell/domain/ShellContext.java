@@ -68,7 +68,7 @@ public class ShellContext {
         }
 
         if (cache == null) {
-            logger.warn("Service cache for environment %s does not exist yet so building.", environmentName);
+            logger.warn("Service cache for environment {} does not exist yet so building.", environmentName);
             Environment e = this.niFiCLIConfiguration.getEnvironmentByName(environmentName);
             ServiceCache newCache = new ServiceCache(e);
             this.environmentServiceCacheMap.put(e, newCache);

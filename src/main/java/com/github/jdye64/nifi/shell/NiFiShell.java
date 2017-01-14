@@ -157,9 +157,14 @@ public class NiFiShell {
                 if (currentEnv != null) {
                     ServiceCache sc = shellContext.getServiceCacheForEnvironmentName(currentEnv.getEnvironmentName());
                     TemplatesEntity templates = sc.getFlowService().getAllTemplates();
-                    for (TemplateEntity template : templates.getTemplates()) {
-                        logger.info("{} - {}", template.getId(), template.getTemplate().getName());
+                    if (templates != null) {
+                        for (TemplateEntity template : templates.getTemplates()) {
+                            logger.info("{} - {}", template.getId(), template.getTemplate().getName());
+                        }
+                    } else {
+                        logger.warn("No templates returned from HTTP request. Either environment is down or no templates exist.");
                     }
+
                 } else {
                     logger.warn("Please set a current working environment before running this command");
                 }

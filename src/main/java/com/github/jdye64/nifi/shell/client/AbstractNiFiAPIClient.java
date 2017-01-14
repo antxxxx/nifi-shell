@@ -44,6 +44,8 @@ import org.apache.nifi.persistence.TemplateDeserializer;
 import org.apache.nifi.web.api.ApplicationResource;
 import org.apache.nifi.web.api.dto.TemplateDTO;
 import org.apache.nifi.web.api.entity.Entity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +54,8 @@ import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 
 public abstract class AbstractNiFiAPIClient {
+
+    public static final Logger logger = LoggerFactory.getLogger(AbstractNiFiAPIClient.class);
 
     private String server;
     private String port;
@@ -160,7 +164,7 @@ public abstract class AbstractNiFiAPIClient {
             }
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("Unable to complete HTTP GET due to {}", ex.getMessage());
             return null;
         }
     }
@@ -227,7 +231,7 @@ public abstract class AbstractNiFiAPIClient {
             }
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("Unable to complete HTTP POST due to {}", ex.getMessage());
             return null;
         }
     }
