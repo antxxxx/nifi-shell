@@ -116,7 +116,7 @@ public class NiFiShell {
             }
         }
         catch( ParseException exp ) {
-            logger.error( "Parsing failed. Reason: %s" + exp.getMessage() );
+            logger.error( "Parsing failed. Reason: {}" + exp.getMessage() );
         }
 
         return 0;

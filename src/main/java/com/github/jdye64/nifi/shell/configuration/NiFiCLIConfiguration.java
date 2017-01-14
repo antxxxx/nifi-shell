@@ -90,7 +90,7 @@ public class NiFiCLIConfiguration {
         }
 
         //Load the NiFiCLIConfiguration file.
-        //logger.debug("Loading NiFi-Shell configuration file %s", configFilePath);
+        //logger.debug("Loading NiFi-Shell configuration file {}", configFilePath);
         return mapper.readValue(confFile, NiFiCLIConfiguration.class);
     }
 
