@@ -14,6 +14,16 @@
 
 # NiFi-Shell
 
+Apache NiFi is simply an amazing piece of software. While NiFi is powerful and fun to use it often confuses people around more traditional topics in the SDLC. This
+shell is meant to try and fill those gaps to make more enterprise driven deployments of NiFi fit more neatly into their existing SDLC functions.
+
+This project's main goal right now is to make this process incredibly easy and straight forward. In that spirit some technical best practices have not been followed
+since the main goal right now is to feel out what is actually helpful and desired by the community rather than making the most efficient piece of software
+possible. I find it more important that the software helps end users be more efficient at first and later we can focus on making the codebase itself more efficient by
+removing poor practices like global variables, better logging practices, better memory management, and more elaboratly designed objects. In the mean time please
+reflect and ask yourself what features you would like to see and create a Github Issue here and lets work together to make something great for the Apache NiFi community!
+Once we have something we are all happy with the end goal will be to contribute it back to Apache NiFi where it can be used by a much larger audience! Open source for the win!
+
 - [Features](#features)
 - [Running](#running)
 - [Shell Commands](#shell-commands)

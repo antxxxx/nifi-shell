@@ -148,7 +148,7 @@ language governing permissions and limitations under the License. -->
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.jeremydyer.nifi.cli.NiFiShell</mainClass>
+                                    <mainClass>com.github.jdye64.nifi.shell.NiFiShell</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
