@@ -17,9 +17,51 @@
 
 package com.github.jdye64.nifi.shell.service;
 
-/**
- * Created by jdyer on 4/8/16.
- */
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.nifi.web.api.ConnectionResource;
+import org.apache.nifi.web.api.ProcessorResource;
+import org.apache.nifi.web.api.dto.EntityFactory;
+import org.apache.nifi.web.api.entity.ConnectionEntity;
+import org.apache.nifi.web.api.entity.ConnectionsEntity;
+
+import com.github.jdye64.nifi.shell.client.NiFiAPIClient;
+import com.github.jdye64.nifi.shell.configuration.Environment;
+
 public class ConnectionsServiceImplementation
+    extends AbstractBaseService
     implements ConnectionsService {
+
+    private EntityFactory entityFactory;
+
+    public ConnectionsServiceImplementation(Environment environment) {
+        client = new NiFiAPIClient(environment.getHostname(), environment.getPort());
+        this.entityFactory = new EntityFactory();
+    }
+
+    public ConnectionsEntity getConnections(String clientId, String processorGroupId) {
+        try {
+            Method getConnectionMethod = ProcessorResource.class.getMethod("getConnection", String.class);
+            Map<String, String> pathParams = new HashMap<String, String>();
+            pathParams.put("id", processorGroupId);
+            return (ConnectionsEntity) client.get(ConnectionResource.class, getConnectionMethod, null, pathParams);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public ConnectionEntity deleteConnection(String clientId, String connectionId) {
+        try {
+            Method deleteConnectionMethod = ConnectionResource.class.getMethod("deleteConnection", String.class);
+            Map<String, String> pathParams = new HashMap<String, String>();
+            pathParams.put("id", connectionId);
+            return (ConnectionEntity) client.get(ConnectionResource.class, deleteConnectionMethod, null, pathParams);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
 }

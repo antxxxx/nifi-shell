@@ -17,8 +17,22 @@
 
 package com.github.jdye64.nifi.shell.service;
 
-/**
- * Created by jdyer on 4/8/16.
- */
+import org.apache.nifi.web.api.entity.ConnectionEntity;
+import org.apache.nifi.web.api.entity.ConnectionsEntity;
+
 public interface ConnectionsService {
+
+    /**
+     * Gets all connections for a ProcessGroup
+     *
+     * @param clientId
+     *
+     * @param processorGroupId
+     *  The id of the process group that is the parent of the requested resource(s). If the desired process group is the root group an alias 'root' may be used as the process-group-id.
+     *
+     * @return
+     */
+    ConnectionsEntity getConnections(String clientId, String processorGroupId);
+
+    ConnectionEntity deleteConnection(String clientId, String connectionId);
 }

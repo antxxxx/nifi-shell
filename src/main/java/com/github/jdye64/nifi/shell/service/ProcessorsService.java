@@ -18,6 +18,7 @@
 package com.github.jdye64.nifi.shell.service;
 
 import org.apache.nifi.web.api.dto.ProcessorDTO;
+import org.apache.nifi.web.api.entity.ProcessorEntity;
 
 /**
  * Created by jdyer on 4/8/16.
@@ -35,4 +36,8 @@ public interface ProcessorsService {
      * @return
      */
     ProcessorDTO getProcessors(String clientId, String processorGroupId);
+
+    ProcessorEntity stopProcessor(ProcessorEntity currentEntity);
+
+
 }

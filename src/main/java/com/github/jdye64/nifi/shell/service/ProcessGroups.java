@@ -21,13 +21,13 @@ import java.io.InputStream;
 
 import org.apache.nifi.web.api.dto.TemplateDTO;
 import org.apache.nifi.web.api.entity.ConnectionEntity;
+import org.apache.nifi.web.api.entity.ConnectionsEntity;
 import org.apache.nifi.web.api.entity.FlowEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupEntity;
+import org.apache.nifi.web.api.entity.ProcessGroupsEntity;
+import org.apache.nifi.web.api.entity.ProcessorsEntity;
 import org.apache.nifi.web.api.entity.TemplateEntity;
 
-/**
- * Created by jdyer on 4/8/16.
- */
 public interface ProcessGroups {
 
     /**
@@ -49,15 +49,21 @@ public interface ProcessGroups {
      */
     ProcessGroupEntity getProcessGroup(String clientId, boolean recursive, boolean verbose, String processGroupId);
 
+    ProcessGroupsEntity getProcessGroups(String clientId, boolean recursive, boolean verbose, String processGroupId);
+
     ProcessGroupEntity updateProcessGroup(String clientID, double positionX, double positionY, String processGroupdId);
 
     ProcessGroupEntity createProcessGroup(String cliendId, double positionX, double positionY, String processGroupdId, String newProcessGroupName);
 
     ConnectionEntity createConnection(String cliendID, String processGroupId);
 
+    ConnectionsEntity getConnections(String clientId, String processGroupId);
+
     FlowEntity instantiateTemplate(String processGroupId);
 
     TemplateEntity uploadTemplate(String processGroupId, TemplateDTO templateDTO);
 
     TemplateEntity uploadTemplate(String processGroupId, InputStream xmlTemplateInputStream);
+
+    ProcessorsEntity getProcessors(String processGroupId, boolean includeDecendentProcessors);
 }

@@ -18,6 +18,7 @@
 package com.github.jdye64.nifi.shell.client;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -28,10 +29,12 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -94,7 +97,6 @@ public abstract class AbstractNiFiAPIClient {
      *  The updated URI string with the real invocation values
      */
     private String replaceUriWithPathParams(String currentUri, Map<String, String> pathParams) {
-        System.out.println("Current: " + currentUri);
 
         //Iterates through all of the path params
         if (pathParams != null) {
@@ -248,15 +250,20 @@ public abstract class AbstractNiFiAPIClient {
     public <U extends Entity> Object put(
             Class<? extends ApplicationResource> resourceClass,
             Method nifiApiMethod,
-            U u) {
+            U u,
+            Map<String, String> pathParams) {
 
         StringBuilder stringBuilder = new StringBuilder(this.baseUrl);
         stringBuilder.append(resourceClass.getAnnotation(Path.class).value());
-        stringBuilder.append("/");
-        stringBuilder.append(nifiApiMethod.getAnnotation(Path.class).value());
+        String methodPath = nifiApiMethod.getAnnotation(Path.class).value();
+        if (methodPath.startsWith("/")) {
+            stringBuilder.append(nifiApiMethod.getAnnotation(Path.class).value());
+        } else {
+            stringBuilder.append("/");
+            stringBuilder.append(nifiApiMethod.getAnnotation(Path.class).value());
+        }
 
-        //String fullRequest = replaceUriWithPathParams(stringBuilder.toString(), pathParams);
-        String fullRequest = stringBuilder.toString();
+        String fullRequest = replaceUriWithPathParams(stringBuilder.toString(), pathParams);
 
         HttpPut request = new HttpPut(fullRequest);
 
@@ -270,6 +277,53 @@ public abstract class AbstractNiFiAPIClient {
             request.setHeader("Content-type", "application/json");
             HttpResponse response = client.execute(request);
 
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(response.getEntity().getContent(), writer, "utf-8");
+            String theString = writer.toString();
+
+            return mapper.readValue(theString, nifiApiMethod.getAnnotation(ApiOperation.class).response());
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
+     * Invokes an HTTP DELETE operation on a NiFi REST API endpoint.
+     *
+     * @param resourceClass
+     * @param nifiApiMethod
+     * @param u
+     * @param <U>
+     * @return
+     */
+    public <U extends Entity> Object delete(
+            Class<? extends ApplicationResource> resourceClass,
+            Method nifiApiMethod,
+            U u,
+            Map<String, String> pathParams) {
+
+        StringBuilder stringBuilder = new StringBuilder(this.baseUrl);
+        stringBuilder.append(resourceClass.getAnnotation(Path.class).value());
+        String methodPath = nifiApiMethod.getAnnotation(Path.class).value();
+        if (methodPath.startsWith("/")) {
+            stringBuilder.append(nifiApiMethod.getAnnotation(Path.class).value());
+        } else {
+            stringBuilder.append("/");
+            stringBuilder.append(nifiApiMethod.getAnnotation(Path.class).value());
+        }
+
+        String fullRequest = replaceUriWithPathParams(stringBuilder.toString(), pathParams);
+        HttpDelete request = new HttpDelete(fullRequest);
+
+        try {
+
+            // add request header
+            request.addHeader("Accept", "application/json");
+            request.setHeader("Content-type", "application/json");
+            HttpResponse response = client.execute(request);
             return mapper.readValue(response.getEntity().getContent(), nifiApiMethod.getAnnotation(ApiOperation.class).response());
 
         } catch (Exception ex) {

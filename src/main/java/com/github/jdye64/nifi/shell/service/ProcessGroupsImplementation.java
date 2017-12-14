@@ -39,17 +39,17 @@ import org.apache.nifi.web.api.dto.TemplateDTO;
 import org.apache.nifi.web.api.dto.status.ConnectionStatusDTO;
 import org.apache.nifi.web.api.dto.status.ProcessGroupStatusDTO;
 import org.apache.nifi.web.api.entity.ConnectionEntity;
+import org.apache.nifi.web.api.entity.ConnectionsEntity;
 import org.apache.nifi.web.api.entity.FlowEntity;
 import org.apache.nifi.web.api.entity.InstantiateTemplateRequestEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupEntity;
+import org.apache.nifi.web.api.entity.ProcessGroupsEntity;
+import org.apache.nifi.web.api.entity.ProcessorsEntity;
 import org.apache.nifi.web.api.entity.TemplateEntity;
 
 import com.github.jdye64.nifi.shell.client.NiFiAPIClient;
 import com.github.jdye64.nifi.shell.configuration.Environment;
 
-/**
- * Created by jdyer on 4/8/16.
- */
 public class ProcessGroupsImplementation
     extends AbstractBaseService
     implements ProcessGroups {
@@ -68,6 +68,30 @@ public class ProcessGroupsImplementation
             Map<String, String> pathParams = new HashMap<String, String>();
             pathParams.put("id", processGroupId);
             return (ProcessGroupEntity) client.get(ProcessGroupResource.class, updatePGMethod, null, pathParams);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public ProcessGroupsEntity getProcessGroups(String clientId, boolean recursive, boolean verbose, String processGroupId) {
+        try {
+            Method getAllProcessGroupsMethod = ProcessGroupResource.class.getMethod("getProcessGroups", String.class);
+            Map<String, String> pathParams = new HashMap<String, String>();
+            pathParams.put("id", processGroupId);
+            return (ProcessGroupsEntity) client.get(ProcessGroupResource.class, getAllProcessGroupsMethod, null, pathParams);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public ProcessorsEntity getProcessors(String processGroupId, boolean includeDecendentProcessors) {
+        try {
+            Method getProcessorsMethod = ProcessGroupResource.class.getMethod("getProcessors", String.class, boolean.class);
+            Map<String, String> pathParams = new HashMap<String, String>();
+            pathParams.put("id", processGroupId);
+            return (ProcessorsEntity) client.get(ProcessGroupResource.class, getProcessorsMethod, null, pathParams);
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
@@ -100,7 +124,7 @@ public class ProcessGroupsImplementation
 
         try {
             Method updatePGMethod = ProcessGroupResource.class.getMethod("updateProcessGroup");
-            return (ProcessGroupEntity) client.put(ProcessGroupResource.class, updatePGMethod, entity);
+            return (ProcessGroupEntity) client.put(ProcessGroupResource.class, updatePGMethod, entity, null);
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
@@ -174,6 +198,18 @@ public class ProcessGroupsImplementation
             return (ConnectionEntity) client.post(ProcessGroupResource.class, createConnectionMethod, entityFactory.createConnectionEntity(connectionDTO,
                     revisionDTO, permissionsDTO, connectionStatusDTO), null, null);
 
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public ConnectionsEntity getConnections(String clientId, String processGroupId) {
+        try {
+            Method getConnectionsMethod = ProcessGroupResource.class.getMethod("getConnections", String.class);
+            Map<String, String> pathParams = new HashMap<String, String>();
+            pathParams.put("id", processGroupId);
+            return (ConnectionsEntity) client.get(ProcessGroupResource.class, getConnectionsMethod, null, pathParams);
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;

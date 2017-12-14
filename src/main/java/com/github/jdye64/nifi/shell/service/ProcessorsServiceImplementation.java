@@ -17,7 +17,15 @@
 
 package com.github.jdye64.nifi.shell.service;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.nifi.web.api.ProcessorResource;
 import org.apache.nifi.web.api.dto.ProcessorDTO;
+import org.apache.nifi.web.api.entity.ProcessorEntity;
 
 import com.github.jdye64.nifi.shell.client.NiFiAPIClient;
 import com.github.jdye64.nifi.shell.configuration.Environment;
@@ -28,6 +36,10 @@ import com.github.jdye64.nifi.shell.configuration.Environment;
 public class ProcessorsServiceImplementation
     extends AbstractBaseService
     implements ProcessorsService {
+
+    private static final String STOPPED = "STOPPED";
+    private static final String RUNNING = "RUNNING";
+    private static final String DISABLED = "DISABLED";
 
     public ProcessorsServiceImplementation(Environment environment) {
         client = new NiFiAPIClient(environment.getHostname(), environment.getPort());
@@ -47,5 +59,28 @@ public class ProcessorsServiceImplementation
 //        }
 
         return null;
+    }
+
+    public ProcessorEntity stopProcessor(ProcessorEntity currentEntity) {
+        try {
+            currentEntity.getComponent().setState(STOPPED);
+            return setProcessorState(currentEntity);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    private ProcessorEntity setProcessorState(ProcessorEntity stateToSet) {
+        try {
+            Method updateProcessorState = ProcessorResource.class.getMethod("updateProcessor",
+                    HttpServletRequest.class, String.class, ProcessorEntity.class);
+            Map<String, String> pathParams = new HashMap<String, String>();
+            pathParams.put("id", stateToSet.getId());
+            return (ProcessorEntity) client.put(ProcessorResource.class, updateProcessorState, stateToSet, pathParams);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 }

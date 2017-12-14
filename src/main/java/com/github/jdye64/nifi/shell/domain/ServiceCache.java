@@ -62,7 +62,7 @@ public class ServiceCache {
 
     public ServiceCache(Environment environment) {
         this.environment = environment;
-        this.connectionsService = new ConnectionsServiceImplementation();
+        this.connectionsService = new ConnectionsServiceImplementation(environment);
         this.controllerService = new ControllerServiceImplementation(environment);
         this.environmentService = new EnvironmentServiceImpl(environment);
         this.flowService = new FlowServiceImplementation(environment);
