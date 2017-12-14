@@ -111,6 +111,37 @@ public abstract class AbstractNiFiAPIClient {
         return currentUri;
     }
 
+    /**
+     * Appends the Query Parameters to the current URI so that the entire query URL can be built
+     *
+     * @param currentUri
+     * @param queryParams
+     * @return
+     */
+    private String buildQueryParams(String currentUri, Map<String, String> queryParams) {
+        //Iterates through all of the path params
+        if (queryParams != null) {
+            Iterator<String> itr = queryParams.keySet().iterator();
+            StringBuilder strBuilding = new StringBuilder();
+            boolean first = true;
+            while (itr.hasNext()) {
+                String key = itr.next();
+                if (first) {
+                    first = false;
+                    strBuilding.append("?");
+                } else {
+                    strBuilding.append("&");
+                }
+                strBuilding.append(key);
+                strBuilding.append("=");
+                strBuilding.append(queryParams.get(key));
+            }
+            currentUri = currentUri + strBuilding.toString();
+        }
+
+        return currentUri;
+    }
+
     public <U extends Entity> Object get(Class<? extends ApplicationResource> resourceClass,
             Method nifiApiMethod,
             U u,
@@ -303,7 +334,8 @@ public abstract class AbstractNiFiAPIClient {
             Class<? extends ApplicationResource> resourceClass,
             Method nifiApiMethod,
             U u,
-            Map<String, String> pathParams) {
+            Map<String, String> pathParams,
+            Map<String, String> queryParams) {
 
         StringBuilder stringBuilder = new StringBuilder(this.baseUrl);
         stringBuilder.append(resourceClass.getAnnotation(Path.class).value());
@@ -316,6 +348,7 @@ public abstract class AbstractNiFiAPIClient {
         }
 
         String fullRequest = replaceUriWithPathParams(stringBuilder.toString(), pathParams);
+        fullRequest = buildQueryParams(fullRequest, queryParams);
         HttpDelete request = new HttpDelete(fullRequest);
 
         try {
@@ -324,7 +357,12 @@ public abstract class AbstractNiFiAPIClient {
             request.addHeader("Accept", "application/json");
             request.setHeader("Content-type", "application/json");
             HttpResponse response = client.execute(request);
-            return mapper.readValue(response.getEntity().getContent(), nifiApiMethod.getAnnotation(ApiOperation.class).response());
+
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(response.getEntity().getContent(), writer, "utf-8");
+            String theString = writer.toString();
+
+            return mapper.readValue(theString, nifiApiMethod.getAnnotation(ApiOperation.class).response());
 
         } catch (Exception ex) {
             ex.printStackTrace();

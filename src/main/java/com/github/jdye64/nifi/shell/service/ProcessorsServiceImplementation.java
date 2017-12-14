@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.nifi.web.api.ProcessorResource;
 import org.apache.nifi.web.api.dto.ProcessorDTO;
 import org.apache.nifi.web.api.entity.ProcessorEntity;
+import org.apache.nifi.web.api.request.ClientIdParameter;
+import org.apache.nifi.web.api.request.LongParameter;
 
 import com.github.jdye64.nifi.shell.client.NiFiAPIClient;
 import com.github.jdye64.nifi.shell.configuration.Environment;
@@ -78,6 +80,22 @@ public class ProcessorsServiceImplementation
             Map<String, String> pathParams = new HashMap<String, String>();
             pathParams.put("id", stateToSet.getId());
             return (ProcessorEntity) client.put(ProcessorResource.class, updateProcessorState, stateToSet, pathParams);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public ProcessorEntity deleteProcessor(ProcessorEntity entity) {
+        try {
+            Method deleteProcessor = ProcessorResource.class.getMethod("deleteProcessor",
+                    HttpServletRequest.class, LongParameter.class, ClientIdParameter.class, String.class);
+            Map<String, String> pathParams = new HashMap<String, String>();
+            pathParams.put("id", entity.getId());
+            Map<String, String> queryParams = new HashMap<String, String>();
+            queryParams.put("clientid", entity.getRevision().getClientId());
+            queryParams.put("version", new Long(entity.getRevision().getVersion()).toString());
+            return (ProcessorEntity) client.delete(ProcessorResource.class, deleteProcessor, null, pathParams, queryParams);
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;

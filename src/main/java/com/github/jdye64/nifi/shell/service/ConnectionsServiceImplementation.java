@@ -21,11 +21,15 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.nifi.web.api.ConnectionResource;
 import org.apache.nifi.web.api.ProcessorResource;
 import org.apache.nifi.web.api.dto.EntityFactory;
 import org.apache.nifi.web.api.entity.ConnectionEntity;
 import org.apache.nifi.web.api.entity.ConnectionsEntity;
+import org.apache.nifi.web.api.request.ClientIdParameter;
+import org.apache.nifi.web.api.request.LongParameter;
 
 import com.github.jdye64.nifi.shell.client.NiFiAPIClient;
 import com.github.jdye64.nifi.shell.configuration.Environment;
@@ -55,10 +59,11 @@ public class ConnectionsServiceImplementation
 
     public ConnectionEntity deleteConnection(String clientId, String connectionId) {
         try {
-            Method deleteConnectionMethod = ConnectionResource.class.getMethod("deleteConnection", String.class);
+            Method deleteConnectionMethod = ConnectionResource.class.getMethod("deleteConnection",
+                    HttpServletRequest.class, LongParameter.class, ClientIdParameter.class, String.class);
             Map<String, String> pathParams = new HashMap<String, String>();
             pathParams.put("id", connectionId);
-            return (ConnectionEntity) client.get(ConnectionResource.class, deleteConnectionMethod, null, pathParams);
+            return (ConnectionEntity) client.delete(ConnectionResource.class, deleteConnectionMethod, null, pathParams, null);
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;

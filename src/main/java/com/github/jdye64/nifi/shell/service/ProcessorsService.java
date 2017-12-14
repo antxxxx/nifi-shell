@@ -39,5 +39,7 @@ public interface ProcessorsService {
 
     ProcessorEntity stopProcessor(ProcessorEntity currentEntity);
 
+    ProcessorEntity deleteProcessor(ProcessorEntity entity);
+
 
 }
