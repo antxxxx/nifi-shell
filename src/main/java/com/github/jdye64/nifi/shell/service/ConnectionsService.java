@@ -17,8 +17,11 @@
 
 package com.github.jdye64.nifi.shell.service;
 
+import java.util.List;
+
 import org.apache.nifi.web.api.entity.ConnectionEntity;
 import org.apache.nifi.web.api.entity.ConnectionsEntity;
+import org.apache.nifi.web.api.entity.ProcessorEntity;
 
 public interface ConnectionsService {
 
@@ -35,4 +38,10 @@ public interface ConnectionsService {
     ConnectionsEntity getConnections(String clientId, String processorGroupId);
 
     ConnectionEntity deleteConnection(String clientId, String connectionId);
+
+    List<ConnectionEntity> getUpstreamConnectionsForProcessor(
+            ConnectionsEntity allConnections, ProcessorEntity processorEntity);
+
+    List<ConnectionEntity> getDownstreamConnectionsForProcessor(
+            ConnectionsEntity allConnections, ProcessorEntity processorEntity);
 }

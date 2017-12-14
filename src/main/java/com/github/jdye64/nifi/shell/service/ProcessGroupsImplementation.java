@@ -44,6 +44,7 @@ import org.apache.nifi.web.api.entity.FlowEntity;
 import org.apache.nifi.web.api.entity.InstantiateTemplateRequestEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupsEntity;
+import org.apache.nifi.web.api.entity.ProcessorEntity;
 import org.apache.nifi.web.api.entity.ProcessorsEntity;
 import org.apache.nifi.web.api.entity.TemplateEntity;
 
@@ -166,6 +167,22 @@ public class ProcessGroupsImplementation
             pathParams.put("id", processGroupdId);
 
             return (ProcessGroupEntity) client.post(ProcessGroupResource.class, createPGMethod, entity, pathParams, null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+
+    public ProcessorEntity createProcessor(String clientId, double positionX, double positionY, String processGroupId, ProcessorEntity processor) {
+        try {
+            Method createProcessor = ProcessGroupResource.class.getMethod("createProcessor",
+                    HttpServletRequest.class,
+                    String.class,
+                    ProcessorEntity.class);
+            Map<String, String> pathParams = new HashMap<String, String>();
+            pathParams.put("id", processGroupId);
+            return (ProcessorEntity) client.post(ProcessGroupResource.class, createProcessor, processor, pathParams, null);
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;

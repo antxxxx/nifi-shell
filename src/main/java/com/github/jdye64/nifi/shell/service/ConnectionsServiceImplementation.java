@@ -18,7 +18,9 @@
 package com.github.jdye64.nifi.shell.service;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +30,7 @@ import org.apache.nifi.web.api.ProcessorResource;
 import org.apache.nifi.web.api.dto.EntityFactory;
 import org.apache.nifi.web.api.entity.ConnectionEntity;
 import org.apache.nifi.web.api.entity.ConnectionsEntity;
+import org.apache.nifi.web.api.entity.ProcessorEntity;
 import org.apache.nifi.web.api.request.ClientIdParameter;
 import org.apache.nifi.web.api.request.LongParameter;
 
@@ -68,5 +71,28 @@ public class ConnectionsServiceImplementation
             ex.printStackTrace();
             return null;
         }
+    }
+
+
+    public List<ConnectionEntity> getUpstreamConnectionsForProcessor(
+            ConnectionsEntity allConnections, ProcessorEntity processorEntity) {
+        List<ConnectionEntity> upstreamCons = new ArrayList<ConnectionEntity>();
+        for (ConnectionEntity ce : allConnections.getConnections()) {
+            if (ce.getDestinationId().equals(processorEntity.getId())) {
+                upstreamCons.add(ce);
+            }
+        }
+        return upstreamCons;
+    }
+
+    public List<ConnectionEntity> getDownstreamConnectionsForProcessor(
+            ConnectionsEntity allConnections, ProcessorEntity processorEntity) {
+        List<ConnectionEntity> downstreamCons = new ArrayList<ConnectionEntity>();
+        for (ConnectionEntity ce : allConnections.getConnections()) {
+            if (ce.getSourceId().equals(processorEntity.getId())) {
+                downstreamCons.add(ce);
+            }
+        }
+        return downstreamCons;
     }
 }

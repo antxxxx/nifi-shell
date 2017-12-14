@@ -260,7 +260,10 @@ public abstract class AbstractNiFiAPIClient {
                 TemplateDTO templateDTO = TemplateDeserializer.deserialize(response.getEntity().getContent());
                 return templateDTO;
             } else {
-                return mapper.readValue(response.getEntity().getContent(), nifiApiMethod.getAnnotation(ApiOperation.class).response());
+                StringWriter writer = new StringWriter();
+                IOUtils.copy(response.getEntity().getContent(), writer, "utf-8");
+                String theString = writer.toString();
+                return mapper.readValue(theString, nifiApiMethod.getAnnotation(ApiOperation.class).response());
             }
 
         } catch (Exception ex) {

@@ -25,6 +25,7 @@ import org.apache.nifi.web.api.entity.ConnectionsEntity;
 import org.apache.nifi.web.api.entity.FlowEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupEntity;
 import org.apache.nifi.web.api.entity.ProcessGroupsEntity;
+import org.apache.nifi.web.api.entity.ProcessorEntity;
 import org.apache.nifi.web.api.entity.ProcessorsEntity;
 import org.apache.nifi.web.api.entity.TemplateEntity;
 
@@ -54,6 +55,8 @@ public interface ProcessGroups {
     ProcessGroupEntity updateProcessGroup(String clientID, double positionX, double positionY, String processGroupdId);
 
     ProcessGroupEntity createProcessGroup(String cliendId, double positionX, double positionY, String processGroupdId, String newProcessGroupName);
+
+    ProcessorEntity createProcessor(String clientId, double positionX, double positionY, String processGroupId, ProcessorEntity processor);
 
     ConnectionEntity createConnection(String cliendID, String processGroupId);
 
